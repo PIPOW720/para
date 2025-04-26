@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensagem para Davi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Angelia+Beauty&display=swap" rel="stylesheet">
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+  <style>
+    body {
+      font-family: 'Dancing Script', cursive;
+      margin: 0;
+      padding: 0;
+      background-image: url('imagem/fundo.jpg'); /* Substitua pelo caminho da imagem */
+      background-size: 200px 400px; /* Ajusta para a imagem não ser esticada */
+      background-position: center;
+      background-repeat: repeat;
+      color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      padding: 20px;
+      text-align: center;
+    }
+    .iframe-container {
+      margin: 20px 0;
+    }
+    .carousel-inner {
+      margin: 20px 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+    .img-carousel {
+      width: 50%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 5%;
+      border: 2px solid #444;
+    }
+    .emoji-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .emoji {
+      position: absolute;
+      top: -50px;
+      font-size: 2rem;
+      animation: fall linear infinite;
+      color: white;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .divisor {
+      width: 50%;
+      height: 2px;
+      background: #555;
+      margin: 20px auto;
+    }
+    p {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+    strong {
+      color: #ffd700; /* dourado para destaque */
+    }
+
+    /* Efeito Laser no texto */
+    .laser-text {
+      font-family: 'Angelia Beauty', cursive;
+      font-size: 30px;
+      color: #ff0044; /* Cor do laser (vermelho) */
+      text-shadow: 0 0 5px #ff0044, 0 0 10px #ff0044, 0 0 15px #ff0044, 0 0 20px #ff0044, 0 0 30px #ff0044;
+      animation: laserEffect 1.5s infinite alternate;
+    }
+
+    @keyframes laserEffect {
+      0% {
+        text-shadow: 0 0 5px #ff0044, 0 0 10px #ff0044, 0 0 15px #ff0044, 0 0 20px #ff0044, 0 0 30px #ff0044;
+      }
+      100% {
+        text-shadow: 0 0 15px #ff0044, 0 0 20px #ff0044, 0 0 25px #ff0044, 0 0 30px #ff0044, 0 0 35px #ff0044;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+        max-width: 100%;
+      }
+
+      .iframe-container iframe {
+        width: 100%;
+        height: 150px;
+      }
+
+      .img-carousel {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .fancy-font {
+        font-family: 'Dancing Script', cursive;
+        font-size: 25px;
+      }
+    }
+
+    /* Estilo para o botão circular com ícone fixo na lateral */
+    .button-circular {
+      position: fixed;
+      top: 50%; /* Posiciona no meio da tela verticalmente */
+      right: 0; /* Posiciona no lado direito */
+      background-color: #fcf4f400;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgb(66, 1, 243);
+      z-index: 20; /* Fica acima de outros elementos */
+    }
+
+    .button-circular:hover {
+      background-color: #5f181800;
+    }
+
+    /* Estilo para o pop-up de versículos */
+    .popup-content {
+      font-family: Arial, sans-serif;
+      color: rgb(245, 242, 242);
+      padding: 20px;
+      background-color: rgb(255, 255, 255 0.4);
+      border-radius: 8px;
+      max-width: 300px;
+      position: fixed;
+      top: 20%;
+      right: 10px; /* Posiciona à direita */
+      display: none; /* Inicialmente oculto */
+      z-index: 20; /* Garante que ficará acima de outros elementos */
+      backdrop-filter: blur(10px); /* Aplica o desfoque ao fundo */
+     -webkit-backdrop-filter: blur(10px); /* Para navegadores Webkit */
+    }
+
+    /* Para o botão de fechar */
+    .popup-content button {
+      background-color: #ffffff;
+      color: rgba(0, 0, 0, 0.338);
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .popup-content button:hover {
+      background-color: #08010383;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<section class="container">
+
+  <!-- Botão circular com ícone fixo na lateral -->
+  <button class="button-circular" onclick="togglePopup()">
+    <img src="imagem/biblia.png" alt="Ícone do livro" style="width: 50px; height: 50px;"> <!-- Substitua com o caminho do seu ícone -->
+  </button>
+
+  <!-- Pop-up de versículos -->
+  <div class="popup-content" id="popup">
+    <h2>Filipenses 4:6-7</h2>
+    <p>“Não andeis ansiosos por coisa alguma, mas em tudo, pela oração e súplicas, com ação de graças, sejam conhecidas as vossas petições diante de Deus; e a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus.</p>
+    <h2>Isaías 41:10</h2>
+    <p>“Não temas, porque eu estou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.</p>
+    <button onclick="togglePopup()">Fechar</button>
+  </div>
+
+  <div class="iframe-container">
+    <iframe src="https://open.spotify.com/embed/track/3KkXRkHbMCARz0aVfEt68P?si=2023a29878e5472e" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
+  </div>
+
+  <div class="carousel-inner">
+    <div class="carousel-item">
+      <img class="img-carousel" src="imagem/nossafoto.jpg" alt="Imagem do Carrossel">
+    </div>
+  </div>
+
+  <div class="emoji-rain">
+    <span class="emoji" style="left: 10%; animation-duration: 5s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+    <span class="emoji" style="left: 25%; animation-duration: 7s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+    <span class="emoji" style="left: 40%; animation-duration: 6s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+    <span class="emoji" style="left: 55%; animation-duration: 4.5s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+    <span class="emoji" style="left: 70%; animation-duration: 8s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+    <span class="emoji" style="left: 85%; animation-duration: 5.5s;">
+      <img src="imagem/coração.png" alt="Coração Remendado" style="width: 30px; height: 30px;">
+    </span>
+  </div>
+
+  <h1 class="font-bold text-xl">Para Pessoa Mais Forte Que Conheço:</h1>
+  <p class="text-center font-semibold">
+    1 ano, 5 meses, 4 dias, 8 horas, 31 minutos e 57 segundos
+  </p>
+
+  <div class="divisor"></div>
+
+  <div class="text-center">
+    <p class="fancy-font">"Eu entendo sua dor…"</p>
+    <p class="fancy-font">Eu queria ter dito isso antes, com mais clareza:</p>
+    <p class="fancy-font">Entendo a dor que você carregava.</p>
+    <p class="fancy-font">Eu sei que não foi fácil pra você também…</p>
+    <p class="fancy-font">Sei que esconder o que a gente tinha te machucava por dentro.</p>
+    <p class="fancy-font">E sei que, mesmo sorrindo, seu coração muitas vezes tava gritando por paz.</p>
+    <p class="fancy-font">Você foi muito mais forte do que parece.</p>
+    <p class="fancy-font">Aguentou pressão, medo, culpa… e mesmo assim continuou ao meu lado enquanto pôde.</p>
+    <p class="fancy-font">Talvez eu tenha me concentrado tanto na minha dor que esqueci de reconhecer a sua.</p>
+    <p class="fancy-font">Hoje, com o coração mais calmo, eu consigo ver.</p>
+    <p class="fancy-font">Você foi corajosa.</p>
+    <p class="fancy-font">Você lutou do seu jeito.</p>
+    <p class="fancy-font">Você tentou fazer dar certo mesmo quando tudo parecia conspirar contra.</p>
+    <p class="fancy-font">E mesmo tendo terminado, nada apaga o quanto você foi importante pra mim — e o quanto eu admiro a Força que teve, mesmo em silêncio.</p>
+    <p class="fancy-font">Sei Que a Vida Não Foi Justa Com a Gente.</p>
+    <p class="fancy-font">Mas o que a gente viveu foi verdadeiro.</p>
+    <p class="fancy-font">E por isso, eu só consigo te desejar paz, cura e um futuro cheio de luz.</p>
+    <p class="laser-text">Você merece Julya.</p> <!-- Aqui está o efeito laser -->
+  </div>
+
+</section>
+
+<script>
+  // Função para abrir/fechar o pop-up
+  function togglePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+
+</body>
+</html>
